@@ -286,7 +286,7 @@ if __name__ == "__main__":
 
     # --- Step 4: Generate Output Report ---
     print("\n\n" + "="*95)
-    print("BENCHMARK REPORT (Copy this table to your technical report)")
+    print("BENCHMARK RESULT")
     print("="*95)
     
     # Print Table Header
