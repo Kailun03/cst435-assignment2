@@ -23,9 +23,9 @@ The primary goal is to analyze the performance trade-offs, scalability, and spee
 ### 1. Google Cloud Platform (GCP) Instance
 The project was developed and tested on the following GCP VM configuration:
 * **Machine Type:** `e2-standard-4` (4 vCPUs, 16 GB Memory)
-* **Operating System:** Ubuntu 22.04 LTS
+* **Operating System:** Debian GNU/Linux 12 (bookworm)
 * **Region:** asia-southeast1 (Singapore)
-* **Disk:** 20 GB Standard Persistent Disk
+* **Disk:** 10 GB Balanced Persistent Disk
 
 ### 2. System Dependencies
 To set up the environment on a fresh Ubuntu VM, execute:
@@ -101,3 +101,4 @@ Key Observations
 * TAN YI PEI (164767)
 * TAN YIN XUAN (164467)
 * TEOH KAI LUN (164277)
+
