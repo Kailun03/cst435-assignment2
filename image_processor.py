@@ -291,12 +291,12 @@ if __name__ == "__main__":
     
     # Print Table Header
     print(f"{'Workers':<10} | {'MP Time(s)':<12} | {'MP Speedup':<12} | {'MP Eff':<10} || {'CF Time(s)':<12} | {'CF Speedup':<12} | {'CF Eff':<10}")
-    print("-" * 110)
+    print("-" * 95)
 
     # Print Table Rows
     for r in results:
         print(f"{r['workers']:<10} | {r['mp_time']:<12.4f} | {r['mp_su']:<12.2f} | {r['mp_eff']:<10.2f} || {r['cf_time']:<12.4f} | {r['cf_su']:<12.2f} | {r['cf_eff']:<10.2f}")
     
-    print("-" * 110)
+    print("-" * 95)
     print("Legend: MP = Multiprocessing, CF = Concurrent Futures, Eff = Efficiency")
     print("="*95 + "\n")
