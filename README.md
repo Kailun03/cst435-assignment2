@@ -28,12 +28,23 @@ The project was developed and tested on the following GCP VM configuration:
 * **Disk:** 10 GB Balanced Persistent Disk
 
 ### 2. System Dependencies
-To set up the environment on a fresh Ubuntu VM, execute:
+To set up the environment on a fresh VM, execute:
 
 ```
 # Update system and install system-level dependencies for OpenCV
 sudo apt-get update
-sudo apt-get install -y python3-pip python3-dev unzip libgl1
+sudo apt-get install -y python3 python3-pip python3-venv unzip libgl1
+```
+
+### 2. Virtual Environment
+create and activate a Python virtual environment:
+
+```
+#Isolate project dependencies by creating a virtual environment named venv
+$ python3 -m venv venv
+
+# Activate the environment
+$ source venv/bin/activate
 ```
 
 ## 📂 Dataset Preparation
@@ -72,6 +83,10 @@ The `image_processor.py` script includes a fully automated benchmark suite. It w
 
 Run the benchmark:
 ```
+# install the cv2 requried package
+pip install opencv-python-headless numpy
+
+# execute the test
 python3 image_processor.py --dir image-data
 ```
 
@@ -89,10 +104,6 @@ This data is used to calculate Speedup ($S = T_1 / T_N$) and Efficiency ($E = S 
 | **4** | 3.2045 | 3.69 | 0.92 | 3.5012 | 3.55 | 0.89 |
 | **8** | 3.3012 | 3.58 | 0.45 | 3.6022 | 3.45 | 0.43 |  
 
-Key Observations
-* **Scalability**: Performance improves linearly up to 4 workers, matching the 4 vCPUs of the VM.
-* **Bottlenecks**: At 8 workers, efficiency drops significantly due to CPU context switching (resource saturation) and I/O overhead.
-* **Paradigm Comparison**: multiprocessing generally exhibits slightly lower overhead than concurrent.futures.
 
 ---
 
@@ -101,4 +112,5 @@ Key Observations
 * TAN YI PEI (164767)
 * TAN YIN XUAN (164467)
 * TEOH KAI LUN (164277)
+
 
