@@ -49,7 +49,7 @@ $ source venv/bin/activate
 
 ## 📂 Dataset Preparation
 This project uses a subset of the Food-101 dataset.
-To avoid storage issues on the VM, we utilize a manual subset of 1,000 images (specifically the apple_pie class).
+To avoid storage issues on the VM, we utilize a manual subset of 100 images (specifically images from the apple_pie class).
 
 ### Step 1: Upload Zip Folder
 Use the "Upload File" utility to upload `cst435-dataset.zip` to the GCP VM via SSH.
@@ -112,5 +112,6 @@ This data is used to calculate Speedup ($S = T_1 / T_N$) and Efficiency ($E = S 
 * TAN YI PEI (164767)
 * TAN YIN XUAN (164467)
 * TEOH KAI LUN (164277)
+
 
 
