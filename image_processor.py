@@ -386,4 +386,4 @@ if __name__ == "__main__":
         print(f"{r[0]:<10} | {r[1]:<12.4f} | {r[2]:<10.2f} | {r[3]:<8.2f} || {r[4]:<12.4f} | {r[5]:<10.2f} | {r[6]:<8.2f}")
 
     print("="*95 + "\n")
-    print("Legend: MP = Multiprocessing, CF = Concurrent Futures, SU = Speedup, Eff = Efficiency")
+    print("Legend: MP = Multiprocessing, CF = Concurrent Futures, SU = Speedup, Eff = Efficiency" + "\n\n")
