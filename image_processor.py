@@ -284,12 +284,7 @@ def run_concurrent_process(image_files, num_workers):
     Mechanism:
     - Uses a Pool of worker PROCESSES (Heavyweight).
     - Each process runs in its own memory space with its own Python interpreter.
-    - CRITICAL: This approach BYPASSES the Global Interpreter Lock (GIL).
-    
-    Why use this for Image Processing?
-    - Since applying filters is CPU-Bound (heavy calculation), we need full CPU cores.
-    - Unlike threads, these processes can run true parallel math calculations 
-      at the exact same time.
+    - This approach BYPASSES the Global Interpreter Lock (GIL).
     
     Args:
         image_files (list): List of file paths to process.
@@ -302,8 +297,7 @@ def run_concurrent_process(image_files, num_workers):
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=num_workers) as executor:
         # map() schedules the function calls across processes
-        # list() is forced here to ensure the iterator completes execution 
-        # before stopping the timer
+        # list() is forced here to ensure the iterator completes execution before stopping the timer
         list(executor.map(process_single_image, image_files))
 
     return time.time() - start_time
@@ -316,12 +310,7 @@ def run_concurrent_thread(image_files, num_workers):
     Mechanism:
     - Creates a Pool of worker threads within a SINGLE process.
     - Threads share the same memory space and Python interpreter.
-    
-    CRITICAL PERFORMANCE NOTE:
-    In Python, threads are subject to the Global Interpreter Lock (GIL). 
-    Since image processing is a CPU-Bound task (heavy math calculations), 
-    the GIL prevents threads from executing Python bytecodes in parallel.
-    
+
     Args:
         image_files (list): List of file paths to process.
         num_workers (int): Number of threads to spawn.
