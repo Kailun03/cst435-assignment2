@@ -4,10 +4,11 @@
 ========================================================================
 
 * This script implements a benchmarking tool to compare the performance
-  of two Python parallel programming paradigms:
+  of several Python parallel programming paradigms:
 
   1. Multiprocessing (via multiprocessing.Pool)
-  2. Concurrent Futures (via concurrent.futures.ProcessPoolExecutor)
+  2. Concurrent Futures Process (via concurrent.futures.ProcessPoolExecutor)
+  2. Concurrent Futures Thread (via concurrent.futures.ThreadPoolExecutor)
 
 * The system processes a collection of images by applying a pipeline 
   of five computationally intensive filters manually implemented using
