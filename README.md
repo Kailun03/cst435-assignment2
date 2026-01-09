@@ -7,12 +7,13 @@ The system applies a pipeline of five image filters to a dataset of food images 
 deployed on a **Google Cloud Platform (GCP)** Virtual Machine.
 
 The primary goal is to analyze the performance trade-offs, scalability, and speedup between:
-1.  **Multiprocessing** (Process-based parallelism using `multiprocessing`)
-2.  **Concurrent Futures** (High-level asynchronous execution using `concurrent.futures`)
+1.  **Multiprocessing Module** (Low-level process-based parallelism)
+2.  **Concurrent Futures Process** (High-level process-based execution)
+3.  **Concurrent Futures Thread** (Thread-based execution to demonstrate GIL limitations)
 
 ## 🎯 Objectives
 * Implement a sequential image processing pipeline with 5 image filters.
-* Parallelize the pipeline using two different Python paradigms.
+* Parallelize the pipeline using different Python paradigms.
 * Deploy and test the solution on a controlled GCP environment.
 * Analyze Speedup (Amdahl's Law) and Efficiency across different core counts (1, 2, 4, 8).
 
@@ -78,7 +79,7 @@ Use the "Upload File" utility to upload `image_processor.py` to the GCP VM via S
 The `image_processor.py` script includes a fully automated benchmark suite. It will:
 1. Verify the dataset exists.
 2. Run a "Sanity Check" on a single image to ensure validity.
-3. Execute the pipeline with 1, 2, 4, and 8 workers for both paradigms.
+3. Execute the pipeline with 1, 2, 4, and 8 workers for three paradigms.
 4. Generate a formatted report table.
 
 Run the benchmark:
@@ -97,14 +98,18 @@ The script outputs a table similar to the one below.
 This data is used to calculate Speedup ($S = T_1 / T_N$) and Efficiency ($E = S / N$).
 <br>Sample Output:
 
-| Workers | MP Time(s) | MP Speedup | MP Eff | CF Time(s) | CF Speedup | CF Eff |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1** | 352.2515 | 1.00 | 1.00 | 352.0200 | 1.00 | 1.00 |
-| **2** | 181.7335 | 1.94 | 0.97 | 178.2116 | 1.98 | 0.99 |
-| **4** | 167.3402 | 2.11 | 0.53 | 169.2503 | 2.08 | 0.52 |
-| **8** | 171.7337 | 2.05 | 0.26 | 165.0644 | 2.13 | 0.27 |  
+| Workers | MP Time(s) | MP Speedup | MP Eff | CP Time(s) | CP Speedup | CP Eff | CT Time(s) | CT Speedup | CT Eff |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **1** | 463.8720 | 1.00 | 1.00 | 458.2166 | 1.00 | 1.00 | 444.4631 | 1.00 | 1.00 |
+| **2** | 233.6291 | 1.99 | 0.99 | 228.7215 | 2.00 | 1.00 | 454.4783 | 0.98 | 0.49 |
+| **4** | 250.2887 | 1.85 | 0.46 | 242.0605 | 1.89 | 0.47 | 457.0445 | 0.97 | 0.24 |
+| **8** | 247.1126 | 1.88 | 0.23 | 243.1815 | 1.88 | 0.24 | 468.7917 | 0.95 | 0.12 |
 
-
+**Legend:**
+* **MP:** `multiprocessing` module (Processes)
+* **CP:** `concurrent.futures.ProcessPoolExecutor` (Processes)
+* **CT:** `concurrent.futures.ThreadPoolExecutor` (Threads)
+* 
 ---
 
 ## 👥 Team Members
@@ -112,6 +117,7 @@ This data is used to calculate Speedup ($S = T_1 / T_N$) and Efficiency ($E = S 
 * TAN YI PEI (164767)
 * TAN YIN XUAN (164467)
 * TEOH KAI LUN (164277)
+
 
 
 
