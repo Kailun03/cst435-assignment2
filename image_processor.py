@@ -277,13 +277,14 @@ def run_multiprocessing(image_files, num_workers):
     return time.time() - start_time
 
 
-def run_concurrent_futures(image_files, num_workers):
+def run_concurrent_process(image_files, num_workers):
     """
-    Executes the image processing tasks using the `concurrent.futures` module.
+    Executes the image processing tasks using `concurrent.futures.ProcessPoolExecutor`.
     
     Mechanism:
-    - Uses ProcessPoolExecutor as a high-level abstraction over multiprocessing.
-    - Returns futures (placeholders for eventual results).
+    - Uses a Pool of worker PROCESSES (Heavyweight).
+    - Each process runs in its own memory space with its own Python interpreter.
+    - This approach BYPASSES the Global Interpreter Lock (GIL).
     
     Args:
         image_files (list): List of file paths to process.
@@ -295,12 +296,36 @@ def run_concurrent_futures(image_files, num_workers):
     start_time = time.time()
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=num_workers) as executor:
-        # list() is forced here to ensure the iterator completes execution 
-        # before stopping the timer
+        # map() schedules the function calls across processes
+        # list() is forced here to ensure the iterator completes execution before stopping the timer
         list(executor.map(process_single_image, image_files))
 
     return time.time() - start_time
 
+
+def run_concurrent_thread(image_files, num_workers):
+    """
+    Executes the image processing tasks using `concurrent.futures.ThreadPoolExecutor`.
+    
+    Mechanism:
+    - Creates a Pool of worker threads within a SINGLE process.
+    - Threads share the same memory space and Python interpreter.
+
+    Args:
+        image_files (list): List of file paths to process.
+        num_workers (int): Number of threads to spawn.
+        
+    Returns:
+        float: Total execution time in seconds.
+    """
+    start_time = time.time()
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
+        # map() schedules the function calls across threads
+        # list() forces the main thread to wait until all tasks are complete
+        list(executor.map(process_single_image, image_files))
+
+    return time.time() - start_time
 
 # =============================================================================
 # SECTION 4: MAIN BENCHMARK DRIVER
@@ -356,34 +381,41 @@ if __name__ == "__main__":
 
         # Run benchmarks
         t_mp = run_multiprocessing(image_files, n)
-        t_cf = run_concurrent_futures(image_files, n)
+        t_cp = run_concurrent_process(image_files, n)
+        t_ct = run_concurrent_thread(image_files, n)
 
-        print(f"Done. (MP: {t_mp:.2f}s, CF: {t_cf:.2f}s)")
+        print(f"Done. (MP: {t_mp:.2f}s, CP: {t_cp:.2f}s, CT: {t_ct:.2f}s)")
 
         # Calculate Metrics
         if n == 1:
-            t1_mp, t1_cf = t_mp, t_cf
-            mp_su = cf_su = mp_eff = cf_eff = 1.0
+            t1_mp, t1_cp, t1_ct = t_mp, t_cp, t_ct
+            mp_su = cp_su = ct_su = 1.0
+            mp_eff = cp_eff = ct_eff = 1.0
         else:
-            # Speedup = Time_Serial / Time_Parallel
+            # Speedup = T1 / Tn
             mp_su = t1_mp / t_mp
-            cf_su = t1_cf / t_cf
+            cp_su = t1_cp / t_cp
+            ct_su = t1_ct / t_ct
             
-            # Efficiency = Speedup / N
+            # Efficiency = Speedup / n
             mp_eff = mp_su / n
-            cf_eff = cf_su / n
+            cp_eff = cp_su / n
+            ct_eff = ct_su / n
 
-        results.append((n, t_mp, mp_su, mp_eff, t_cf, cf_su, cf_eff))
+        results.append({
+            "n": n,
+            "mp": (t_mp, mp_su, mp_eff),
+            "cp": (t_cp, cp_su, cp_eff),
+            "ct": (t_ct, ct_su, ct_eff)
+        })
 
     # --- Step 4: Generate Report ---
-    print("\n\n" + "="*95)
+    print("\n\n" + "="*110)
     print("BENCHMARK RESULTS REPORT")
-    print("="*95)
-    print(f"{'Workers':<10} | {'MP Time(s)':<12} | {'MP Speedup':<10} | {'MP Eff':<8} || {'CF Time(s)':<12} | {'CF Speedup':<10} | {'CF Eff':<8}")
-    print("-" * 95)
-
+    print("="*110)
+    print(f"{'Workers':<10} | {'MP Time(s)':<12} | {'MP Speedup':<10} | {'MP Eff':<8} || {'CP Time(s)':<12} | {'CP Speedup':<10} | {'CP Eff':<8} || {'CT Time(s)':<12} | {'CT Speedup':<10} | {'CT Eff':<8}")
+    print("-" * 110)
     for r in results:
-        print(f"{r[0]:<10} | {r[1]:<12.4f} | {r[2]:<10.2f} | {r[3]:<8.2f} || {r[4]:<12.4f} | {r[5]:<10.2f} | {r[6]:<8.2f}")
-
-    print("="*95 + "\n")
-    print("Legend: MP = Multiprocessing, CF = Concurrent Futures, SU = Speedup, Eff = Efficiency" + "\n\n")
+        print(f"{r['n']:<10} | {r['mp'][0]:<12.4f} | {r['mp'][1]:<10.2f} | {r['mp'][2]:<8.2f} || {r['cp'][0]:<12.4f} | {r['cp'][1]:<10.2f} | {r['cp'][2]:<8.2f} || {r['ct'][0]:<12.4f} | {r['ct'][1]:<10.2f} | {r['ct'][2]:<8.2f}")
+    print("="*110 + "\n")
+    print("Legend: MP = Multiprocessing, CP = Concurrent Process, CT = Concurrent Thread, SU = Speedup, Eff = Efficiency" + "\n\n")
